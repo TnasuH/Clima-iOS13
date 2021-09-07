@@ -8,10 +8,9 @@
 
 import UIKit
 
-class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManagerDelegate {
+class WeatherViewController: UIViewController {
     
     //MARK: identifiers
-    
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
@@ -20,7 +19,7 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
     var weatherManager = WeatherManager()
     var weather: WeatherModel?
     
-    // MARK: - Functions
+    // MARK: Functions
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +30,11 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
     @IBAction func searchBtnPressed(_  sender: UIButton) {
         searchTextUI.endEditing(true)
     }
+}
+
+// MARK: - UITextFieldDelegate Extension Methods
+extension WeatherViewController: UITextFieldDelegate {
     
-    // MARK: - UITextFieldDelegate Methods
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextUI.endEditing(true)
@@ -54,8 +56,10 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
         }
         searchTextUI.text = ""
     }
-    
-    // MARK: - WeatherManagerDelegate Methods
+}
+
+// MARK: - WeatherManagerDelegate Extension Methods
+extension WeatherViewController: WeatherManagerDelegate {
     
     func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel){
         DispatchQueue.main.async {
@@ -83,4 +87,3 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
     }
     
 }
-
