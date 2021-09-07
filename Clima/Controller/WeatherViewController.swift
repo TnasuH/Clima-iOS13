@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class WeatherViewController: UIViewController {
     
@@ -17,18 +18,45 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var searchTextUI: UITextField!
     
     var weatherManager = WeatherManager()
-    var weather: WeatherModel?
-    
+    let locationManager = CLLocationManager()
+    var count = 0
     // MARK: Functions
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         searchTextUI.delegate = self
         weatherManager.delegate = self
+        locationManager.delegate = self
+        
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
+        
+    }
+    @IBAction func findCurrentLocationWeatherPressed(_ sender: UIButton) {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
     }
     
     @IBAction func searchBtnPressed(_  sender: UIButton) {
         searchTextUI.endEditing(true)
+    }
+}
+
+// MARK: - CLLocationManagerDelegate Extension Methods
+extension WeatherViewController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            locationManager.stopUpdatingLocation()
+            let lat = "\(location.coordinate.latitude)"
+            let lon = "\(location.coordinate.longitude)"
+            weatherManager.fetchWeather(lat: lat, lon: lon)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("an error on location manager \(error)")
     }
 }
 
@@ -66,7 +94,6 @@ extension WeatherViewController: WeatherManagerDelegate {
             self.cityLabel.text = weather.cityName
             self.temperatureLabel.text = weather.temperatureString
             self.conditionImageView.image = UIImage(systemName: weather.conditionName)
-            self.weather = weather
         }
     }
     
